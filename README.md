@@ -1,6 +1,8 @@
 # gcc1734
 Centro Federal de Educação Tecnológica Celso Suckow da Fonseca (CEFET/RJ)
 
+2
+
 Bacharelado em Ciência da Computação
 
 GCC1734 - Inteligência Artificial
