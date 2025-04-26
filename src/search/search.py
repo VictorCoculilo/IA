@@ -112,13 +112,48 @@ def depthFirstSearch(problem):
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.Stack()
+    startNode = problem.getStartState()
+    frontier.push((startNode, []))
+
+    expanded = set()
+
+    while not frontier.isEmpty():
+        node, path = frontier.pop()
+
+        if problem.isGoalState(node):
+            return path
+
+        if node not in expanded:
+            expanded.add(node)
+
+            for child, action, cost in problem.expand(node):
+                if child not in expanded:
+                    frontier.push((child, path + [action]))
+
+    return []  # Retorna uma lista vazia se não encontrar o caminho
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.Queue()  # Aqui é a mudança principal: usamos uma fila
+    startNode = problem.getStartState()
+    frontier.push((startNode, []))  # (estado, caminho)
+
+    expanded = set()
+
+    while not frontier.isEmpty():
+        node, path = frontier.pop()
+
+        if problem.isGoalState(node):
+            return path
+
+        if node not in expanded:
+            expanded.add(node)
+
+            for child, action, cost in problem.expand(node):
+                if child not in expanded:
+                    frontier.push((child, path + [action]))
+    return []  # Retorna uma lista vazia se não encontrar o caminho
 
 def nullHeuristic(state, problem=None):
     """
@@ -129,8 +164,30 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    frontier = util.PriorityQueue()
+    startNode = problem.getStartState()
+    startPath = []
+    startCost = 0
+    frontier.push((startNode, startPath, startCost), startCost + heuristic(startNode, problem))
+
+    explored = set()
+
+
+    while not frontier.isEmpty():
+        node, path, totalCost = frontier.pop()
+        if problem.isGoalState(node):
+            return path
+
+        if node not in explored:
+            explored.add(node)
+
+            for child, action, stepCost in problem.expand(node):
+                if child not in explored:
+                    newCost = totalCost + stepCost
+                    newPath = path + [action]
+                    priority = newCost + heuristic(child, problem)
+                    frontier.push((child, newPath, newCost), priority)
+    return []  # Retorna uma lista vazia se não encontrar o caminho 
 
 
 # Abbreviations
