@@ -39,8 +39,8 @@ class TwoJarsState:
         >>> TwoJarsState((1, 0)).isGoal()
         False
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.jars["J4"] == 2 #verifica se o jarro 4 tem 2L de água
+
 
     def legalMoves( self ):
         """
@@ -60,8 +60,24 @@ class TwoJarsState:
         >>> TwoJarsState((1, 3)).legalMoves()
         ['fillJ4', 'pourJ3intoJ4', 'emptyJ3', 'emptyJ4']
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        moves = []
+        #encher jarros, verifica se o jarro está cheio
+        if self.jars["J3"] < 3:
+            moves.append("fillJ3")
+        if self.jars["J4"] < 4:
+            moves.append("fillJ4")  
+        #despejar jarros, verifica se o jarro está vazio e se o jarro de destino não está cheio
+        if self.jars["J3"] > 0 and self.jars["J4"] < 4:
+            moves.append("pourJ3intoJ4")
+        if self.jars["J4"] > 0 and self.jars["J3"] < 3:
+            moves.append("pourJ4intoJ3")
+        #esvaziar jarros, verifica se o jarro não está vazio
+        if self.jars["J3"] > 0:
+            moves.append("emptyJ3")
+        if self.jars["J4"] > 0:
+            moves.append("emptyJ4")
+
+        return moves
 
     def result(self, move):
         """
@@ -74,8 +90,29 @@ class TwoJarsState:
         NOTE: This function *does not* change the current object.  Instead,
         it returns a new object.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #retorna o estado atual dos jarros
+        j4 = self.jars["J4"]
+        j3 = self.jars["J3"]
+
+        #verifica o movimento e atualiza o estado dos jarros
+        if move == "fillJ3":
+            j3 = 3
+        elif move == "fillJ4":
+            j4 = 4
+        elif move == "emptyJ3":
+            j3 = 0
+        elif move == "emptyJ4":
+            j4 = 0
+        elif move == "pourJ3intoJ4":
+            pour = min(j3, 4 - j4)  #procura o mínimo entre o jarro 3 e o jarro 4, para não passar do limite
+            j3 -= pour  
+            j4 += pour
+        elif move == "pourJ4intoJ3":
+            pour = min(j4, 3 - j3)
+            j4 -= pour
+            j3 += pour
+
+        return TwoJarsState((j4, j3))
 
     # Utilities for comparison and display
     def __eq__(self, other):
@@ -86,8 +123,7 @@ class TwoJarsState:
           >>> TwoJarsState((0, 1)) == TwoJarsState((1, 0)).result('pourJ4intoJ3')
           True
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.jars == other.jars
 
     def __hash__(self):
         return hash(str(self.jars))
@@ -96,8 +132,7 @@ class TwoJarsState:
         """
           Returns a display string for the maze
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return f" ---------\n| {self.jars['J4']} | {self.jars['J3']} |\n ---------" 
 
     def __str__(self):
         return self.__getAsciiString()

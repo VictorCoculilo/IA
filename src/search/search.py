@@ -112,47 +112,54 @@ def depthFirstSearch(problem):
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     """
-    frontier = util.Stack()
-    startNode = problem.getStartState()
-    frontier.push((startNode, []))
+    
+    frontier = util.Stack() #cria a pilha   
+    startNode = problem.getStartState() #pega o estado inicial
+    startPath = [] #caminho inicial vazio
+    frontier.push((startNode, startPath)) # (estado, caminho) #adiciona o estado inicial na pilha
 
-    expanded = set()
+    expanded = set()    #conjunto para armazenar os nós expandidos
 
-    while not frontier.isEmpty():
-        node, path = frontier.pop()
+    while not frontier.isEmpty():   
+        node, path = frontier.pop()   #remove o nó do topo da pilha
 
-        if problem.isGoalState(node):
+        if problem.isGoalState(node):   #verifica se o nó é o estado objetivo, se for, retorna o caminho
             return path
 
-        if node not in expanded:
+        if node not in expanded:    #verifica se o nó já foi expandido, se não foi, expande o nó
             expanded.add(node)
 
-            for child, action, cost in problem.expand(node):
-                if child not in expanded:
-                    frontier.push((child, path + [action]))
+            for child, action, cost in problem.expand(node):    #expande o nó, obtendo os filhos, ações e custos(não utilizado)
+                if child not in expanded:   #verifica se o filho já foi expandido, se não foi, adiciona o filho na pilha
+                    frontier.push((child, path + [action])) #adiciona o filho na pilha com o caminho atualizado
 
     return []  # Retorna uma lista vazia se não encontrar o caminho
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    frontier = util.Queue()  # Aqui é a mudança principal: usamos uma fila
-    startNode = problem.getStartState()
-    frontier.push((startNode, []))  # (estado, caminho)
+    
+    #basicamente o mesmo código do DFS, mas com uma fila ao invés de uma pilha
+    
+    frontier = util.Queue()  # cria uma fila(a principal diferença)
+    startNode = problem.getStartState() #pega o estado inicial
+    startPath = []  #caminho inicial vazio
+    frontier.push((startNode, startPath))  # (estado, caminho) #adiciona o estado inicial na pilha
 
-    expanded = set()
+    expanded = set()    #conjunto para armazenar os nós expandidos
 
     while not frontier.isEmpty():
-        node, path = frontier.pop()
+        node, path = frontier.pop() #remove o nó do topo da pilha
 
-        if problem.isGoalState(node):
+        if problem.isGoalState(node):   #verifica se o nó é o estado objetivo, se for, retorna o caminho
             return path
 
-        if node not in expanded:
+        if node not in expanded:    #verifica se o nó já foi expandido, se não foi, expande o nó
             expanded.add(node)
 
-            for child, action, cost in problem.expand(node):
-                if child not in expanded:
-                    frontier.push((child, path + [action]))
+            for child, action, cost in problem.expand(node):    #expande o nó, obtendo os filhos, ações e custos(não utilizado)
+                if child not in expanded:   #verifica se o filho já foi expandido, se não foi, adiciona o filho na pilha
+                    frontier.push((child, path + [action])) #adiciona o filho na pilha com o caminho atualizado
+                    
     return []  # Retorna uma lista vazia se não encontrar o caminho
 
 def nullHeuristic(state, problem=None):
@@ -164,33 +171,63 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    frontier = util.PriorityQueue()
-    startNode = problem.getStartState()
-    startPath = []
-    startCost = 0
+    
+    #bem parecido com os outros, mas com uma fila de prioridade
+    frontier = util.PriorityQueue() # cria uma fila de prioridade(a principal diferença)
+    startNode = problem.getStartState() #pega o estado inicial
+    startPath = []  #caminho inicial vazio
+    startCost = 0   #variavel nova que representa o custo inicial, no caso aqui é 0 
+    
+    #adiciona o estado inicial na fila de prioridade com o custo inicial + heurística do estado inicial
     frontier.push((startNode, startPath, startCost), startCost + heuristic(startNode, problem))
 
-    explored = set()
+    explored = set()    #conjunto para armazenar os nós expandidos
 
 
-    while not frontier.isEmpty():
-        node, path, totalCost = frontier.pop()
-        if problem.isGoalState(node):
+    while not frontier.isEmpty():   
+        node, path, totalCost = frontier.pop()  #remove o nó do topo da fila de prioridade, dividindo o nó, o caminho e o custo total
+        if problem.isGoalState(node):   #verifica se o nó é o estado objetivo, se for, retorna o caminho
             return path
 
-        if node not in explored:
+        if node not in explored:    #verifica se o nó já foi expandido, se não foi, expande o nó
             explored.add(node)
 
-            for child, action, stepCost in problem.expand(node):
-                if child not in explored:
-                    newCost = totalCost + stepCost
-                    newPath = path + [action]
-                    priority = newCost + heuristic(child, problem)
-                    frontier.push((child, newPath, newCost), priority)
+            for child, action, stepCost in problem.expand(node):    #expande o nó, obtendo os filhos, ações e o custo
+                if child not in explored:   #verifica se o filho já foi expandido, se não foi, adiciona o filho na fila de prioridade
+                    newCost = totalCost + stepCost  #custo total do nó atual + custo do passo
+                    newPath = path + [action]   #caminho atualizado com a ação
+                    priority = newCost + heuristic(child, problem)  #custo total + heurística do filho
+                    frontier.push((child, newPath, newCost), priority) #adiciona o filho na fila de prioridade com o custo total + heurística do filho
+                    
     return []  # Retorna uma lista vazia se não encontrar o caminho 
 
+def iterativeDeepeningSearch(problem):
+
+    def dls(state, depth, path, visited):   #função auxiliar para a busca em profundidade iterativa
+        if problem.isGoalState(state):  #verifica se o nó é o estado objetivo, se for, retorna o caminho
+            return path
+        if depth == 0:  #verifica se a profundidade é 0, se for, retorna None
+            return None
+
+        visited.add(state)  #adiciona o nó atual na lista de visitados
+        for child, action, stepCost in problem.expand(state):   #expande o nó, obtendo os filhos, ações e custos(não utilizado)
+            if child not in visited:    #verifica se o filho já foi visitado, se não foi, chama a função recursivamente
+                result = dls(child, depth - 1, path + [action], visited.copy()) #chama a função recursivamente com a profundidade - 1, o caminho atualizado e a lista de visitados
+                if result is not None:  #verifica se o resultado não é None, se não for, retorna o resultado
+                    return result
+        return None
+
+    depth = 0
+    while True:
+        visited = set() 
+        #chama a função dls com o estado inicial, profundidade, caminho vazio e lista de visitados vazia
+        result = dls(problem.getStartState(), depth, [], visited) 
+        if result is not None:
+            return result
+        depth += 1  #aumenta a profundidade para a próxima iteração
 
 # Abbreviations
+ids = iterativeDeepeningSearch
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch

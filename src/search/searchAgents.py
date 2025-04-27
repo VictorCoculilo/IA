@@ -314,14 +314,14 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        return (self.startingPosition, ())
+        return (self.startingPosition, ())  # posição inicial e lista de cantos visitados
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        node, visitedCorners = state
-        return len(visitedCorners) == 4
+        node, visitedCorners = state    #divide o estado em nó e lista de cantos visitados
+        return len(visitedCorners) == 4 #verifica se todos os cantos foram visitados
 
     def expand(self, state):
         """
@@ -338,12 +338,13 @@ class CornersProblem(search.SearchProblem):
         for action in self.getActions(state):
             # Add a child state to the child list if the action is legal
             # You should call getActions, getActionCost, and getNextState.
-            child = self.getNextState(state, action)
-            stepCost = self.getActionCost(state, action, child)
-            children.append((child, action, stepCost))
+            
+            child = self.getNextState(state, action)    #chama a função que retorna o próximo estado
+            stepCost = self.getActionCost(state, action, child) #chama a função que retorna o custo da ação
+            children.append((child, action, stepCost))  #adiciona o filho, ação e custo na lista de filhos
 
         self._expanded += 1 # DO NOT CHANGE
-        return children
+        return children #retorna a lista de filhos
 
     def getActions(self, state):
         possible_directions = [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]
@@ -369,12 +370,11 @@ class CornersProblem(search.SearchProblem):
     
         dx, dy = Actions.directionToVector(action)
         nextx, nexty = int(x + dx), int(y + dy)
-        nextPos = (nextx, nexty)
 
-        if nextPos in self.corners and nextPos not in visitedCorners:
-            visitedCorners.append(nextPos)
+        if (nextx, nexty) in self.corners and (nextx, nexty) not in visitedCorners:   #verifica se o próximo nó é um canto e se já foi visitado
+            visitedCorners.append((nextx, nexty))   #adiciona o canto visitado na lista de cantos visitados
 
-        return (nextPos, tuple(visitedCorners))
+        return ((nextx, nexty), tuple(visitedCorners))  #retorna o próximo nó e a lista de cantos visitados
 
     def getCostOfActionSequence(self, actions):
         """
@@ -406,19 +406,21 @@ def cornersHeuristic(state, problem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    currentPosition, visitedCorners = state
-    unvisited = [corner for corner in corners if corner not in visitedCorners]
+    currentPosition, visitedCorners = state # Divide o estado em posição atual e lista de cantos visitados
+    unvisited = [corner for corner in corners if corner not in visitedCorners]  # Cria uma lista de cantos não visitados
 
-    heuristic = 0
-    position = currentPosition
+    heuristic = 0   
+    position = currentPosition  
 
     while unvisited:
-        # Encontra o canto mais próximo (em manhattan) do Pacman
+        # Encontra o canto mais próximo do Pacman
+
+        # Calcula a distância de Manhattan entre o Pacman e os cantos não visitados
         distances = [(util.manhattanDistance(position, corner), corner) for corner in unvisited]
-        minDistance, closest = min(distances)
-        heuristic += minDistance
-        position = closest
-        unvisited.remove(closest)
+        minDistance, closest = min(distances)   # Encontra o canto mais próximo e a distância até ele
+        heuristic += minDistance    # Adiciona a distância mínima à heurística total
+        position = closest  # Atualiza a posição do Pacman para o canto mais próximo
+        unvisited.remove(closest)   # Remove o canto mais próximo da lista de cantos não visitados
 
     return heuristic
 
@@ -543,7 +545,7 @@ def foodHeuristic(state, problem):
     # Calcula a distância real até cada pedaço de comida
     distances = [mazeDistance(position, food, problem.startingGameState) for food in foodList]
 
-    return max(distances)
+    return max(distances)   # Retorna a maior distância entre o Pacman e os pedaços de comida restantes
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -571,10 +573,9 @@ class ClosestDotSearchAgent(SearchAgent):
         startPosition = gameState.getPacmanPosition()
         food = gameState.getFood()
         walls = gameState.getWalls()
-        problem = AnyFoodSearchProblem(gameState)
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        problem = AnyFoodSearchProblem(gameState)   # Cria um novo problema de busca para encontrar a comida mais próxima
+        
+        return search.bfs(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -608,9 +609,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        return self.food[x][y] #verifica se o estado atual é um pedaço de comida
 
 def mazeDistance(point1, point2, gameState):
     """
