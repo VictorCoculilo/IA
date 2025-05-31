@@ -3,6 +3,8 @@ backup/
  __pycache__/
  *.pyc
 
+noteboos/*.pyc
+
 src/search_solns
 
 src/__pycache__/globals.cpython-38.pyc
@@ -26,3 +28,6 @@ src/rl/__pycache__/environment.cpython-310.pyc
 src/rl/__pycache__/taxi_environment.cpython-310.pyc
 src/rl/__pycache__/tql.cpython-310.pyc
 src/rl/__pycache__/blackjack_environment.cpython-310.pyc
+notebooks/__pycache__/
+
+src/*/__pycache__
