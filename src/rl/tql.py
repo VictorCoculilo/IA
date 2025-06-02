@@ -23,6 +23,26 @@ class QLearningAgentTabular:
     self.gamma = gamma # discount rate
     self.epsilons_ = []
     
+  def evaluate(self, num_episodes: int):
+    total_rewards = 0
+
+    for _ in range(num_episodes):
+      terminated = False
+      truncated = False
+
+      state, _ = self.env.reset()
+      state = self.env.get_state_id(state)
+
+      while not (terminated or truncated):
+        action = np.argmax(self.q_table[state])
+        new_state, reward, terminated, truncated, _ = self.env.step(action)
+        new_state = self.env.get_state_id(new_state)
+        state = new_state
+        total_rewards += reward
+
+    return total_rewards / num_episodes
+
+    
   def choose_action(self, state, is_in_exploration_mode=True):
     exploration_tradeoff = np.random.uniform(0, 1)
 
