@@ -101,6 +101,8 @@ python3 labs/busca_adversarial_mcts.py --mode-x human --mode-o ai --iterations 3
 Compare o efeito de aumentar o número de iterações sobre a estabilidade da
 decisão e sobre os contadores da raiz.
 
+Se mostrou que os testes com mais iterações foca nas jogadas que já se mostraram mais promissoras, tendo assim jogadas mais consitentes.
+
 ---
 
 ## Comandos úteis
